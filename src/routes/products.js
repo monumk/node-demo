@@ -117,4 +117,43 @@ router.post("/list", async (req, res) => {
   }
 });
 
+
+
+/**
+ * @swagger
+ * /api/products/deleteProduct:
+ *   post:
+ *     summary: product list
+ *     tags: [Products]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *             properties:
+ *               id:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Product added successfully
+ */
+router.post("/deleteProduct", async (req, res) => {
+  try {
+    const id = req.body.id; // keep it as string
+
+    const result = await Product.deleteOne({ _id: id });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.json({ message: "Product deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
