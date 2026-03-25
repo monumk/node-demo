@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Product = require("../models/Products");
+const validateFields = require("../utils/validateFields");
 
 
 
@@ -34,24 +35,39 @@ const Product = require("../models/Products");
  *       201:
  *         description: Product added successfully
  */
-router.post("/addProduct", async (req, res) => {
-  try {
-    const { productName, productPrice,productImage, productCategory } = req.body;
+router.post(
+  "/addProduct",
+  validateFields({
+    productName: "Product name is required",
+    productPrice: "Product price is required",
+    productImage: "Product image is required",
+    productCategory: "Product category is required",
+  }),
+  async (req, res) => {
+    try {
+      const { productName, productPrice, productImage, productCategory } = req.body;
 
-    // Check user exists
-    let product = await Product.findOne({ productName });
-    if (product) return res.status(400).json({ msg: "product already exists" });
+      let product = await Product.findOne({ productName });
+      if (product) {
+        return res.status(400).json({ msg: "Product already exists" });
+      }
 
+      product = new Product({
+        productName,
+        productPrice,
+        productImage,
+        productCategory,
+      });
 
-    // Save user
-    product = new Product({ productName, productPrice,productImage, productCategory });
-    await product.save();
+      await product.save();
 
-    res.status(201).json({ msg: "Product added successfully" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+      res.status(201).json({ msg: "Product added successfully" });
+
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   }
-});
+);
 
 
 /**
