@@ -5,6 +5,8 @@ const cors = require("cors");
 const swaggerUi = require("swagger-ui-express");
 const authRoutes = require("./src/routes/auth");
 const productRoutes = require("./src/routes/products");
+const busRoutes = require("./src/routes/bus");
+const driverRoutes = require("./src/routes/driver")
 
 dotenv.config();
 
@@ -20,6 +22,9 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/api/auth", authRoutes); // ✅ THIS LINE IS CRITICAL
 app.use("/api/products", productRoutes); // ✅ THIS LINE IS CRITICAL
+app.use("/api/bus", busRoutes);
+app.use("/api/driver", driverRoutes);
+
 
 
 
