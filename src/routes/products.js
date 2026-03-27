@@ -72,6 +72,74 @@ router.post(
 
 /**
  * @swagger
+ * /api/products/updateProduct:
+ *   patch:
+ *     summary: Update product
+ *     tags: [Products]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - productName
+ *               - productPrice
+ *               - productImage
+ *               - productCategory
+ *               - productId
+ *             properties:
+ *               productName:
+ *                 type: string
+ *               productPrice:
+ *                 type: number
+ *               productImage:
+ *                 type: string
+ *               productCategory:
+ *                 type: string 
+ *               productId:
+ *                 type: string 
+ *     responses:
+ *       201:
+ *         description: Product updated successfully
+ */
+
+router.patch(
+  "/updateProduct",
+  validateFields({
+    productName: "Product name is required",
+    productPrice: "Product price is required",
+    productImage: "Product image is required",
+    productCategory: "Product category is required",
+    productId: "Product id is required",
+  }),
+  async (req, res) => {
+    try {
+      const { productName, productPrice, productImage, productCategory, productId } = req.body;
+
+      let product = await Product.findById(productId);
+
+      if (!product) {
+        return res.status(400).json({ msg: "Product not exists" });
+      }
+      product.productName = productName;
+      product.productPrice = productPrice;
+      product.productImage = productImage;
+      product.productCategory = productCategory;
+
+      await product.save();
+
+      res.status(200).json({ msg: "Product updated successfully", product });
+
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+);
+
+
+/**
+ * @swagger
  * /api/products/list:
  *   post:
  *     summary: product list
