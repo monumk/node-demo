@@ -128,4 +128,69 @@ router.post("/list", async (req, res) => {
     }
 })
 
+
+
+/**
+ * @swagger
+ * /api/driver/deleteDriver/{id}:
+ *   delete:
+ *     summary: Delete a driver by ID
+ *     description: Deletes a driver from the database using the provided driver ID.
+ *     tags:
+ *       - Driver
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: MongoDB ObjectId of the driver to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Driver deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Driver deleted successfully
+ *       404:
+ *         description: Driver not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Driver not found
+ *       500:
+ *         description: Server error while deleting driver
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error deleting driver
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
+ */
+router.delete("/deleteDriver/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await Driver.deleteOne({ _id: id });
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: "Driver not found" });
+        }
+        res.status(200).json({ message: "Driver deleted successfully" });
+    } catch (err) {
+        res.status(500).json({ message: "Error deleting driver", error: err.message });
+    }
+});
+
 module.exports = router
