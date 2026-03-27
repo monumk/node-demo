@@ -5,7 +5,7 @@ const driverSchema = new mongoose.Schema({
     driverAge: ({type: Number, require: true}),
     driverAddress: ({type: String, require: true}),
     driverIdProof: ({type: String, require: true}),
-    driverLicence: ({type: String, require: true}),
+    driverLicenceNumber: ({type: String, require: true}),
     createdAt: { type: Date, default: Date.now },
 })
 

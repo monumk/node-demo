@@ -21,7 +21,7 @@ const validateFields = require("../utils/validateFields");
  *               - driverAge
  *               - driverAddress
  *               - driverIdProof
- *               - driverLicence
+ *               - driverLicenceNumber
  *             properties:
  *               driverName:
  *                 type: string
@@ -31,7 +31,7 @@ const validateFields = require("../utils/validateFields");
  *                 type: string
  *               driverIdProof:
  *                 type: string
- *               driverLicence:
+ *               driverLicenceNumber:
  *                 type: string
  *     responses:
  *       201:
@@ -45,7 +45,7 @@ router.post(
         driverAge: "driverAge is required",
         driverAddress: "driverAddress is required",
         driverIdProof: "driverIdProof is required",
-        driverLicence: "driverLicence is required",
+        driverLicenceNumber: "driverLicence is required",
     }),
     async (req, res) => {
         try {
@@ -54,7 +54,7 @@ router.post(
                 driverAge,
                 driverAddress,
                 driverIdProof,
-                driverLicence,
+                driverLicenceNumber,
             } = req.body;
 
             const normalizedName = driverName.toLowerCase();
@@ -69,7 +69,7 @@ router.post(
                 driverAge,
                 driverAddress,
                 driverIdProof,
-                driverLicence
+                driverLicenceNumber
             });
 
             await driver.save();
@@ -190,6 +190,93 @@ router.delete("/deleteDriver/:id", async (req, res) => {
         res.status(200).json({ message: "Driver deleted successfully" });
     } catch (err) {
         res.status(500).json({ message: "Error deleting driver", error: err.message });
+    }
+});
+
+
+/**
+ * @swagger
+ * /api/driver/updateDriver/{id}:
+ *   put:
+ *     summary: Update driver
+ *     tags: [Driver]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: MongoDB ObjectId of the driver to delete
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - driverName
+ *               - driverAge
+ *               - driverAddress
+ *               - driverIdProof
+ *               - driverLicenceNumber
+ *             properties:
+ *               driverName:
+ *                 type: string
+ *               driverAge:
+ *                 type: number
+ *               driverAddress:
+ *                 type: string
+ *               driverIdProof:
+ *                 type: string
+ *               driverLicenceNumber:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Driver updated successfully
+ */
+
+router.put("/updateDriver/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Validate MongoDB ObjectId
+        if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).json({ message: "Invalid driver ID" });
+        }
+
+        const {
+            driverName,
+            driverAge,
+            driverAddress,
+            driverIdProof,
+            driverLicenceNumber,
+        } = req.body;
+
+        const driver = await Driver.findById(id);
+
+        if (!driver) {
+            return res.status(404).json({ message: "Driver not found" });
+        }
+
+        // Update only if values are provided
+        if (driverName) driver.driverName = driverName.toLowerCase();
+        if (driverAge) driver.driverAge = driverAge;
+        if (driverAddress) driver.driverAddress = driverAddress;
+        if (driverIdProof) driver.driverIdProof = driverIdProof;
+        if (driverLicenceNumber) driver.driverLicenceNumber = driverLicenceNumber;
+
+        await driver.save();
+
+        res.status(200).json({
+            message: "Driver updated successfully",
+            driver
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            message: "Error updating driver",
+            error: err.message
+        });
     }
 });
 
