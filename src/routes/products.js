@@ -191,7 +191,7 @@ router.post("/list", async (req, res) => {
  * @swagger
  * /api/products/deleteProduct:
  *   post:
- *     summary: product list
+ *     summary: delete product
  *     tags: [Products]
  *     requestBody:
  *       required: true
